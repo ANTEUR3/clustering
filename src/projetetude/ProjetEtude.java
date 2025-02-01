@@ -13,47 +13,25 @@ import java.util.Random;
 public class ProjetEtude {
     
     
-    public class DrawSquares extends JPanel {
-
-    private int generalSquareSize;
-    private double[][] widthHeight;
-
-    public DrawSquares(int generalSquareSize, double[][] widthHeight) {
-        this.generalSquareSize = generalSquareSize;
-        this.widthHeight = widthHeight;
-    }
-
-    @Override
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-
-        // Draw the general square
-        g.setColor(Color.BLACK);
-        g.drawRect(0, 0, generalSquareSize, generalSquareSize);
-
-        // Draw the smaller squares based on percentages
-        for (double[] wh : widthHeight) {
-            double widthPercentage = wh[0];
-            double heightPercentage = wh[1];
-
-            int smallSquareWidth = (int) (generalSquareSize * widthPercentage);
-            int smallSquareHeight = (int) (generalSquareSize * heightPercentage);
-
-            // Calculate random position within the general square (optional)
-            Random rand = new Random();
-            int x = rand.nextInt(generalSquareSize - smallSquareWidth);
-            int y = rand.nextInt(generalSquareSize - smallSquareHeight);
-
-
-            Color randomColor = new Color(rand.nextInt(256), rand.nextInt(256), rand.nextInt(256));
-            g.setColor(randomColor);
-            g.fillRect(x, y, smallSquareWidth, smallSquareHeight);
-
-            g.setColor(Color.GRAY); // Small square border
-            g.drawRect(x, y, smallSquareWidth, smallSquareHeight);
+    public static LineColumn[] getCouple(double dataNumber,double lineNumber,double columnNumber){
+        LineColumn[] result=new LineColumn[100];
+        int index=0;
+        
+        for(int line=1;line<=lineNumber;line++){
+            for(int column=1;column<=columnNumber;column++){
+                if(column*line==dataNumber){
+                    result[index]=new LineColumn(line, column);
+                    index ++;
+                }
+            }
         }
+        return result;
     }
-    }
+        
+        
+
+    
+    
 
     
     public static boolean handled(int[] indexes, int i,int index ){
@@ -80,6 +58,8 @@ public class ProjetEtude {
            double lineColumn=Math.sqrt(imageNumber);
            
            
+           
+           
            double startRemainingLines=0;
            double endRemainingLines=lineColumn-1;
            
@@ -102,15 +82,17 @@ public class ProjetEtude {
                    if(sugmentDataNumber[counter]%linesNumber==0 &&(!handled(handledSugment, i,counter)) ){
                        B=true;
                        sugmentIndex=counter;
-                       handledSugment[counter]=sugmentIndex;
+                       handledSugment[i]=sugmentIndex;
                        lineOrColumn="line";
-                       
+                       System.out.println(counter+"mm");
                    }
                    if(sugmentDataNumber[counter]%columnsNumber==0 &&(!handled(handledSugment, i,counter))){
                        B=true;
                        sugmentIndex=counter;
                        handledSugment[counter]=sugmentIndex;
                        lineOrColumn="column";
+                       System.out.println(counter+"mm");
+
                        
                    }
                    counter++;
@@ -122,7 +104,7 @@ public class ProjetEtude {
                        
                        double lineStart=startRemainingLines;
                        double lineNumber=linesNumber;
-                       results[i]=new sugmentArea(sugmentIndex,sugmentDataNumber[sugmentIndex],lineStart, lineNumber,ColumnStart ,columnNumber );                      
+                       results[i]=new sugmentArea(sugmentIndex+1,sugmentDataNumber[sugmentIndex],lineStart, lineNumber,ColumnStart ,columnNumber );                      
                        startRemainingColumns+=columnNumber;
                        
                    }else{
@@ -137,6 +119,61 @@ public class ProjetEtude {
                    }
                }
                else{
+                   boolean B2=false;
+                   int counter2=0;
+                   while (counter2<4 && !B2){
+                       if(!handled(handledSugment, i, counter2)){
+                           LineColumn LC1[]=getCouple(sugmentDataNumber[counter2], linesNumber, columnsNumber);
+                           int counter3=0;
+                           while(counter3<4 && !B2){
+                               if(!handled(handledSugment, i, counter3) && counter3 != counter2){
+                                 LineColumn LC2[]=getCouple(sugmentDataNumber[counter3], linesNumber, columnsNumber);
+                                 int c=0;
+                                 while(c<LC1.length && !B2){
+                                     if(LC1[c]!=null){
+                                         int c1=0;
+                                         while(c1<LC2.length && !B2){
+                                             if(LC2[c1]!=null){
+                                                 if(LC1[c].line ==LC2[c1].line){
+                                                     if((LC1[c].column + LC2[c1].column)!=columnsNumber){
+                                                           double ColumnStart=startRemainingColumns;
+                                                           
+                                                           double lineStart=startRemainingLines;
+                                                           results[i]=new sugmentArea(counter2,sugmentDataNumber[counter2],lineStart, LC1[c].line,ColumnStart ,LC1[c].column );                      
+                                                           results[i]=new sugmentArea(counter3,sugmentDataNumber[counter3],lineStart, LC2[c1].line,ColumnStart+LC1[c].column ,LC2[c1].column );                      
+                                                           startRemainingLines+=LC1[c].line;
+                                                           B2=true;  
+                                                           i++;
+                                                     } 
+                                                 }
+                                                 else{
+                                                     if(LC1[c].column ==LC2[c1].column){
+                                                     if((LC1[c].line + LC2[c1].line)!=linesNumber){
+                                                           double ColumnStart=startRemainingColumns;
+                                                           
+                                                           double lineStart=startRemainingLines;
+                                                           results[i]=new sugmentArea(counter2,sugmentDataNumber[counter2],lineStart, LC1[c].line,ColumnStart ,LC1[c].column );                      
+                                                           results[i]=new sugmentArea(counter3,sugmentDataNumber[counter3],lineStart, LC2[c1].line+LC1[c].line,ColumnStart+LC1[c].column ,LC2[c1].column );                      
+                                                           startRemainingColumns+=LC1[c].column;
+                                                           B2=true;  
+                                                           i++;
+                                                     } 
+                                                 }
+                                                     
+                                                     
+                                                 }
+                                             }
+                                             c1++;
+                                         }
+                                     }
+                                     c++;
+                                 }
+
+                               }
+                           }
+                       }
+                       counter2++;
+                   }
                    
                }
            }
@@ -148,36 +185,35 @@ public class ProjetEtude {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+                
+        
         double[] percentages=new double[4];
         
-            percentages[0]=40;
-            percentages[1]= 20;
-            percentages[2]=32;
-            percentages[3]=8;
+            percentages[0]=80;
+            percentages[1]= 4;
+            percentages[2]=16;
+            percentages[3]=0;
         
         
         
         sugmentArea[] res=function(25, percentages);
         
-        for(int j=0 ;j<4;j++){
-           res[j].displayInformation();
-
+        for(int i=0;i<res.length;i++){
+            res[i].displayInformation();
             
         }
-        int generalSquareSize = 400; // Example size
-        double[][] widthHeight = {
-                {0.2, 0.3}, // 20% width, 30% height
-                {0.5, 0.2}, // 50% width, 20% height
-                {0.3, 0.6}, // 30% width, 60% height
-                {0.1, 0.1}  // 10% width, 10% height
-        };
-
+        
+        
+        
         JFrame frame = new JFrame("Draw Squares");
-        //DrawSquares panel = new DrawSquares(generalSquareSize, widthHeight);
-        //frame.add(panel);
-        frame.setSize(generalSquareSize + 10, generalSquareSize + 30); // Adjust for frame decorations
+        draw panel = new draw(25, res);
+        frame.add(panel);
+        frame.setSize(25 + 100, 25 + 30); 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
+       
+
+        
        
             
     }
