@@ -21,10 +21,12 @@ public class ProjetEtude {
             for(int column=1;column<=columnNumber;column++){
                 if(column*line==dataNumber){
                     result[index]=new LineColumn(line, column);
+                    System.out.println(dataNumber+"-"+line+"--"+column);
                     index ++;
                 }
             }
         }
+        System.out.println("-----------------------------------------");
         return result;
     }
         
@@ -46,7 +48,7 @@ public class ProjetEtude {
         
     }
     
- public static sugmentArea[] function(int imageNumber,double[]percentages){
+public static sugmentArea[] function(int imageNumber,double[]percentages){
            double[]sugmentDataNumber=new double[4];
            
            for(int j=0;j<percentages.length;j++){
@@ -135,27 +137,32 @@ public class ProjetEtude {
                                          while(c1<LC2.length && !B2){
                                              if(LC2[c1]!=null){
                                                  if(LC1[c].line ==LC2[c1].line){
-                                                     if((LC1[c].column + LC2[c1].column)!=columnsNumber){
+                                                     if((LC1[c].column + LC2[c1].column)==columnsNumber){
                                                            double ColumnStart=startRemainingColumns;
                                                            
                                                            double lineStart=startRemainingLines;
                                                            results[i]=new sugmentArea(counter2,sugmentDataNumber[counter2],lineStart, LC1[c].line,ColumnStart ,LC1[c].column );                      
-                                                           results[i]=new sugmentArea(counter3,sugmentDataNumber[counter3],lineStart, LC2[c1].line,ColumnStart+LC1[c].column ,LC2[c1].column );                      
+                                                           results[i+1]=new sugmentArea(counter3,sugmentDataNumber[counter3],lineStart, LC2[c1].line,ColumnStart+LC1[c].column ,LC2[c1].column );                      
                                                            startRemainingLines+=LC1[c].line;
                                                            B2=true;  
+                                                           handledSugment[i]=counter2;
+                                                           handledSugment[i+1]=counter3;
+
                                                            i++;
                                                      } 
                                                  }
                                                  else{
                                                      if(LC1[c].column ==LC2[c1].column){
-                                                     if((LC1[c].line + LC2[c1].line)!=linesNumber){
+                                                     if((LC1[c].line + LC2[c1].line)==linesNumber){
                                                            double ColumnStart=startRemainingColumns;
                                                            
                                                            double lineStart=startRemainingLines;
                                                            results[i]=new sugmentArea(counter2,sugmentDataNumber[counter2],lineStart, LC1[c].line,ColumnStart ,LC1[c].column );                      
-                                                           results[i]=new sugmentArea(counter3,sugmentDataNumber[counter3],lineStart, LC2[c1].line+LC1[c].line,ColumnStart+LC1[c].column ,LC2[c1].column );                      
+                                                           results[i+1]=new sugmentArea(counter3,sugmentDataNumber[counter3],lineStart, LC2[c1].line+LC1[c].line,ColumnStart+LC1[c].column ,LC2[c1].column );                      
                                                            startRemainingColumns+=LC1[c].column;
                                                            B2=true;  
+                                                           handledSugment[i]=counter2;
+                                                           handledSugment[i+1]=counter3;
                                                            i++;
                                                      } 
                                                  }
@@ -170,6 +177,7 @@ public class ProjetEtude {
                                  }
 
                                }
+                               counter3++;
                            }
                        }
                        counter2++;
@@ -180,8 +188,7 @@ public class ProjetEtude {
  
          return results;
     
-       }  
-    /**
+       }      /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
@@ -189,10 +196,10 @@ public class ProjetEtude {
         
         double[] percentages=new double[4];
         
-            percentages[0]=80;
-            percentages[1]= 4;
+            percentages[0]=4;
+            percentages[1]=16;
             percentages[2]=16;
-            percentages[3]=0;
+            percentages[3]=64;
         
         
         
@@ -202,6 +209,15 @@ public class ProjetEtude {
             res[i].displayInformation();
             
         }
+        
+        for(int c=2;c<res.length;c++){
+            if(res[c].columnNumber==res[c-1].columnNumber){
+                res[c].columnStart+=res[c+1].columnNumber;
+                res[c+1].columnStart-=res[c].columnNumber;
+
+            }
+        }
+        
         
         
         

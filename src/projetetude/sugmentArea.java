@@ -39,6 +39,8 @@ public class sugmentArea {
         for(int j=0;j<this.columnNumber;j++){
             System.out.println(this.columnStart+j);
         }
+        
+        System.out.println(this.columnNumber);
         System.out.println("-----------------------------------");
     }
     
