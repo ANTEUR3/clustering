@@ -88,21 +88,25 @@ public class SugmentGeneration {
     }
     // check possibility on columns 
     public static int[] checkingPossibility2(int[] couples, columnState[] columnsStates){
+            
         
         int []result=new int[5];
         
         int cpl=0;
         boolean BCouples=false;
         while(couples[cpl]!=0 && !BCouples){
+            
             int line=couples[cpl];
             int column=couples[cpl+1];
             
             int i=0;
             boolean B=false;
             while(i<=((columnsStates.length-column))&&!B){
+                
                 int counter=0;
                 boolean B2=true;
                 while(counter<column && B2){
+                   
                     if(columnsStates[i+counter].lineNumber!=line){
                         B2=false;
                     }
@@ -112,7 +116,8 @@ public class SugmentGeneration {
                      B=true; 
                      result[0]=columnsStates[i].lineStart;
                      result[1]=i;
-                     result[3]=column;
+                     result[2]=column;
+                     System.out.println(result[0]+" "+result[1]+" "+result[2]+" ");
                      return result;
                 }
                 i++;
@@ -129,7 +134,80 @@ public class SugmentGeneration {
         result[4]=0;
         return result;
     }
+    //-------------------------------------------------
+        public static int[] checkingPossibility3(int[] couples, lineState[] linesState){
+        
+        int []result=new int[5];
+        
+        int cpl=0;
+        boolean BCouples=false;
+        while(couples[cpl]!=0 && !BCouples){
+            int line=couples[cpl];
+            int column=couples[cpl+1];
+            int i=0;
+            boolean B=false;
+            while(i<((linesState.length-line)+1)&&!B){
+                int counter=0;
+                boolean B2=true;
+                while(counter<line && B2){
+                    if(linesState[i+counter].columnsNumber<column){
+                        B2=false;
+                    }
+                    counter++;
+                }
+                if(B2){
+                     B=true; 
+                     result[0]=i;
+                     result[1]=line;
+                     result[2]=linesState[i].columnStart;
+                     result[3]=column;
+                     return result;
+                }
+                i++;
+            } 
+            if(B){
+                BCouples=true;
+                 
+                
+            }
+            cpl+=2;
+        }
+        result [0]=-1;
+        result [1]=0;
+        result [2]=0;
+        result[3]=0;
+        result[4]=0;
+        return result;
+    }
+        
+            public static lineColumns[] checkingPossibility4(int pixelsNumber, lineState[] linesState){
+            lineColumns[] linesColumns=new lineColumns[1000];
+            int indice=0;
+            
+            int tmp=pixelsNumber;
+            int counter=0;
+            
+            while(counter<linesState.length && tmp>0){
+                if(linesState[counter].columnsNumber>0){
+                    if(linesState[counter].columnsNumber<=tmp){
+                    linesColumns[indice]=new lineColumns(counter, linesState[counter].columnStart, linesState[counter].columnEnd);
+                    tmp-=linesState[counter].columnsNumber;
+                    indice++;
+                }
+                else{
+                        linesColumns[indice]=new lineColumns(counter, linesState[counter].columnStart, linesState[counter].columnStart+tmp-1);
+                        tmp=0;
+                        indice++;                  
+                }
+                }
+                counter++;
+            }
+
+        return linesColumns;
+                    
+    }
     
+
     public static sugmentPosition[] getSugmentsPositions (int sugmentNumber , int linesNumber , int[] sugmentsPercentages){
         sugmentPosition[] result =new sugmentPosition[sugmentNumber];
         // lines states initialisation
@@ -172,9 +250,7 @@ public class SugmentGeneration {
                         for(int h=0;h<columnsStates.length;h++){
                             columnsStates[h].lineNumber-=1;
                             columnsStates[h].lineStart+=1;  
-                            
                         }
-                       
                     }
                      result[i]=new sugmentPosition(counter1+1, sugmentPos);
                      
@@ -195,19 +271,95 @@ public class SugmentGeneration {
                     lineColumns[] sugmentPos=new lineColumns[linesNumber-check[0]];
                     int cc=0;
                     for(int pos=check[0];pos<linesNumber;pos++){
-                        sugmentPos[pos]=new lineColumns(pos, check[1], check[1]+check[2]-1); 
-                        columnsStates[check[1]+cc].lineNumber=(linesNumber-check[0]);
+                        sugmentPos[cc]=new lineColumns(pos, check[1], check[1]+check[2]-1); 
+                        linesStates[pos].columnsNumber-=check[2];
+                        linesStates[pos].columnStart+=check[2];
                         cc++;
                     }
-                     result[i]=new sugmentPosition(counter1+1, sugmentPos);
-                     sugmentsStates=sugmentHandling(sugmentsStates, counter1);
+                    for(int p=0;p<check[2];p++){
+                        columnsStates[check[1]+p].lineNumber-=(linesNumber-check[0]);
+                    }
+                     result[i]=new sugmentPosition(counter2+1, sugmentPos);
+                     sugmentsStates=sugmentHandling(sugmentsStates, counter2);
                  } 
                     }
                 counter2++;
-            }
-                
-                
+            }  
+                if(!B2){
+                    boolean B3=false;
+                    int counter3=0;
+                    while(counter3<sugmentNumber && !B3){
+                    if(sugmentsStates[counter3]==0){
+                    int[] couples=getCouples(sugmentsPixelsNumbers[counter3], linesNumber);
+                    int[] check =checkingPossibility3(couples, linesStates);
+                    if(check[0]!=-1){
+                    B3=true;
+                    lineColumns[] sugmentPos=new lineColumns[check[1]];
+                    int cc=0;
+                    for(int pos=0;pos<check[1];pos++){
+                        sugmentPos[cc]=new lineColumns(pos+check[0], check[2], check[2]+check[3]-1); 
+                        linesStates[pos].columnsNumber-=check[3];
+                        linesStates[pos].columnStart+=check[3];
+
+                        
+                        cc++;
+                    }
+                    
+                    for(int z=0;z<check[3];z++){
+                        columnsStates[check[2]+z].lineNumber-=check[1];
+                        columnsStates[check[2]+z].lineStart+=check[1];
+                    }
+                    
+                     result[i]=new sugmentPosition(counter3+1, sugmentPos);
+                     sugmentsStates=sugmentHandling(sugmentsStates, counter3);
+                 } 
+                    }
+                counter3++;
+            } 
+                    if(!B3){
+                         int counter4=0;
+                         boolean B4=false;
+                         while(counter4<sugmentNumber && !B4){
+                             
+                         if(sugmentsStates[counter4]==0){
+                             B4=true;
+                    
+                        lineColumns[] lc =checkingPossibility4(sugmentsPixelsNumbers[counter4], linesStates);
+                        int lN=0;
+                        while(lc[lN]!=null){
+                            lN++; 
+                        }
+                        System.out.println("France   "+lN);
+                        lineColumns[] LC=new lineColumns[lN];
+                        for(int g=0;g<lN;g++){
+                            System.out.println("******  "+lc[g].columnStart+"  "+lc[g].columnEnd);
+                            LC[g]=new lineColumns(lc[g].line, lc[g].columnStart, lc[g].columnEnd);
+                            linesStates[lc[g].line].columnsNumber-=lc[g].columnEnd-lc[g].columnStart+1;
+                            linesStates[lc[g].line].columnStart+=lc[g].columnEnd-lc[g].columnStart+1;
+                            int cn=lc[g].columnEnd-lc[g].columnStart+1;
+                            
+                            for(int b=0;b<cn;b++){
+                                columnsStates[b+lc[g].columnStart].lineNumber-=1;
+                                columnsStates[b+lc[g].columnStart].lineStart+=1;
+                                
+                            }
+                        }
+                         
+                         result[i]=new sugmentPosition(counter4+1, LC);
+                    }
+                        counter4++;
+                    }     
+                    }
+              }
             }     
+            
+        }
+        
+        for(int h=0;h<linesStates.length;h++){
+            System.out.println(" "+linesStates[h].columnsNumber);
+            System.out.println(linesStates[h].columnStart+"/"+linesStates[h].columnEnd);
+
+            
         }
         return result;
     }
@@ -247,6 +399,7 @@ public class SugmentGeneration {
                  System.out.println(S[ln].linesColumns[i].line);
                  System.out.println(S[ln].linesColumns[i].columnStart);
                  System.out.println(S[ln].linesColumns[i].columnEnd);
+                 System.out.println("***");
                 
              }
               System.out.println("---------------------------------");
