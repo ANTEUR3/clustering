@@ -1,0 +1,261 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Main.java to edit this template
+ */
+package sugmentgeneration;
+import java.util.Scanner;
+
+/**
+ *
+ * @author Admin
+ */
+public class SugmentGeneration {
+    
+    public static int[] getCouples(int pixels, int linesNumber){
+        int[]couples=new int[100];
+        int indice=0;
+        
+        for(int j=0;j<100;j++){
+            couples[j]=0;
+        }
+        
+        for(int i=1;i<=linesNumber;i++){
+            for(int j=1;j<=linesNumber;j++){
+                if(i*j ==pixels){
+                    couples[indice]=i;
+                    couples[indice+1]=j;
+                    indice+=2;
+                }
+            }
+        }
+        
+        return couples;
+    }
+    
+    //--------------------------------------------------------------------------
+     public static int[] sugmentHandling(int[] sugmentState, int sugmentId){
+         sugmentState[sugmentId]=1;
+         
+         return sugmentState;
+              
+     }
+    
+    //--------------------------------------------------------------------------
+    
+    public static int[] checkingPossibility(int[] couples, lineState[] linesState){
+        
+        int []result=new int[5];
+        
+        int cpl=0;
+        boolean BCouples=false;
+        while(couples[cpl]!=0 && !BCouples){
+            int line=couples[cpl];
+            int column=couples[cpl+1];
+            int i=0;
+            boolean B=false;
+            while(i<((linesState.length-line)+1)&&!B){
+                int counter=0;
+                boolean B2=true;
+                while(counter<line && B2){
+                    if(linesState[i+counter].columnsNumber!=column){
+                        B2=false;
+                    }
+                    counter++;
+                }
+                if(B2){
+                     B=true; 
+                     result[0]=i;
+                     result[1]=line;
+                     result[3]=linesState[i].columnStart;
+                     result[4]=linesState[i].columnEnd;
+                     return result;
+                }
+                i++;
+            } 
+            if(B){
+                BCouples=true;
+                 
+                
+            }
+            cpl+=2;
+        }
+        result [0]=-1;
+        result [1]=0;
+        result [2]=0;
+        result[3]=0;
+        result[4]=0;
+        return result;
+    }
+    // check possibility on columns 
+    public static int[] checkingPossibility2(int[] couples, columnState[] columnsStates){
+        
+        int []result=new int[5];
+        
+        int cpl=0;
+        boolean BCouples=false;
+        while(couples[cpl]!=0 && !BCouples){
+            int line=couples[cpl];
+            int column=couples[cpl+1];
+            
+            int i=0;
+            boolean B=false;
+            while(i<=((columnsStates.length-column))&&!B){
+                int counter=0;
+                boolean B2=true;
+                while(counter<column && B2){
+                    if(columnsStates[i+counter].lineNumber!=line){
+                        B2=false;
+                    }
+                    counter++;
+                }
+                if(B2){
+                     B=true; 
+                     result[0]=columnsStates[i].lineStart;
+                     result[1]=i;
+                     result[3]=column;
+                     return result;
+                }
+                i++;
+            } 
+            if(B){
+                BCouples=true;   
+            }
+            cpl+=2;
+        }
+        result [0]=-1;
+        result [1]=0;
+        result [2]=0;
+        result[3]=0;
+        result[4]=0;
+        return result;
+    }
+    
+    public static sugmentPosition[] getSugmentsPositions (int sugmentNumber , int linesNumber , int[] sugmentsPercentages){
+        sugmentPosition[] result =new sugmentPosition[sugmentNumber];
+        // lines states initialisation
+        lineState[] linesStates=new lineState[linesNumber];
+        for(int l=0;l<linesNumber;l++){
+            linesStates[l]=new lineState(0,linesNumber-1, linesNumber);
+        }
+        
+        // columns states initialisation
+        columnState[] columnsStates=new columnState[linesNumber];
+        for(int l=0;l<linesNumber;l++){
+            columnsStates[l]=new columnState(0,linesNumber-1, linesNumber);
+        }
+        // sugments pixels number
+        int[] sugmentsPixelsNumbers=new int[sugmentNumber];
+        
+        for(int j=0;j<sugmentNumber;j++){
+            int pixels= sugmentsPercentages[j]*(linesNumber*linesNumber)/100;
+            sugmentsPixelsNumbers[j]=pixels;  
+        }
+        //sugments states if sugment is handled or no
+        int[] sugmentsStates=new int[sugmentNumber];
+        for(int u=0;u<sugmentNumber;u++){
+            sugmentsStates[u]=0;
+        }
+        for (int i=0;i<sugmentNumber;i++){
+            int counter1=0;
+            boolean B1=false;
+            while(counter1<sugmentNumber && !B1){
+                    if(sugmentsStates[counter1]==0){
+                    int[] couples=getCouples(sugmentsPixelsNumbers[counter1], linesNumber);
+                    int[] check =checkingPossibility(couples, linesStates);
+                    if(check[0]!=-1){
+                    B1=true;
+                    lineColumns[] sugmentPos=new lineColumns[check[1]];
+                    for(int pos=0;pos<check[1];pos++){
+                        sugmentPos[pos]=new lineColumns(pos+check[0], check[3], check[4]); 
+                        linesStates[pos+check[0]].columnsNumber=0;
+                        //
+                        for(int h=0;h<columnsStates.length;h++){
+                            columnsStates[h].lineNumber-=1;
+                            columnsStates[h].lineStart+=1;  
+                            
+                        }
+                       
+                    }
+                     result[i]=new sugmentPosition(counter1+1, sugmentPos);
+                     
+                        sugmentsStates=sugmentHandling(sugmentsStates, counter1);
+                 } 
+                    }
+                counter1++;
+            }
+            if(!B1){
+                boolean B2=false;
+                int counter2=0;
+                while(counter2<sugmentNumber && !B2){
+                    if(sugmentsStates[counter2]==0){
+                    int[] couples=getCouples(sugmentsPixelsNumbers[counter2], linesNumber);
+                    int[] check =checkingPossibility2(couples, columnsStates);
+                    if(check[0]!=-1){
+                    B2=true;
+                    lineColumns[] sugmentPos=new lineColumns[linesNumber-check[0]];
+                    int cc=0;
+                    for(int pos=check[0];pos<linesNumber;pos++){
+                        sugmentPos[pos]=new lineColumns(pos, check[1], check[1]+check[2]-1); 
+                        columnsStates[check[1]+cc].lineNumber=(linesNumber-check[0]);
+                        cc++;
+                    }
+                     result[i]=new sugmentPosition(counter1+1, sugmentPos);
+                     sugmentsStates=sugmentHandling(sugmentsStates, counter1);
+                 } 
+                    }
+                counter2++;
+            }
+                
+                
+            }     
+        }
+        return result;
+    }
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        
+        // Prompt user
+        System.out.print("please enter the number of sugment : ");
+        // Read sugments number
+        int sugmentsNumber = scanner.nextInt();
+        
+        int[] sugmentsPercentages=new int[10];
+        // read sugment percentages 
+        for(int i=0;i<sugmentsNumber;i++){
+             System.out.print("please enter the percentage of sugment  "+(i+1)+": ");
+        // Read sugment percentage
+              sugmentsPercentages[i]=scanner.nextInt();
+        }
+         System.out.print("please enter the pixels number  ");
+        // Read sugment percentage
+         int pixelsNumber=scanner.nextInt();
+         // define the number of columns and lines 
+         double linesColumnsNumberD=Math.sqrt(pixelsNumber);
+         int linesColumnsNumber=(int)linesColumnsNumberD;
+         
+         
+         
+         sugmentPosition[] S= getSugmentsPositions(sugmentsNumber,linesColumnsNumber,sugmentsPercentages);
+         
+         for(int ln=0;ln<sugmentsNumber;ln++){
+             System.out.println(S[ln].id);
+             for(int i=0;i<S[ln].linesColumns.length;i++){
+                 System.out.println(S[ln].linesColumns[i].line);
+                 System.out.println(S[ln].linesColumns[i].columnStart);
+                 System.out.println(S[ln].linesColumns[i].columnEnd);
+                
+             }
+              System.out.println("---------------------------------");
+         }
+         
+         
+         
+         
+         
+    }
+    
+}
