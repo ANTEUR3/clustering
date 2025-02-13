@@ -190,7 +190,7 @@ public class SugmentGeneration {
             while(counter<linesState.length && tmp>0){
                 if(linesState[counter].columnsNumber>0){
                     if(linesState[counter].columnsNumber<=tmp){
-                    linesColumns[indice]=new lineColumns(counter, linesState[counter].columnStart, linesState[counter].columnEnd);
+                    linesColumns[indice]=new lineColumns(counter, linesState[counter].columnStart,linesState[counter].columnStart+ linesState[counter].columnsNumber-1);
                     tmp-=linesState[counter].columnsNumber;
                     indice++;
                 }
@@ -246,6 +246,7 @@ public class SugmentGeneration {
                     for(int pos=0;pos<check[1];pos++){
                         sugmentPos[pos]=new lineColumns(pos+check[0], check[3], check[4]); 
                         linesStates[pos+check[0]].columnsNumber=0;
+                        linesStates[pos+check[0]].columnStart=5;
                         //
                         for(int h=0;h<columnsStates.length;h++){
                             columnsStates[h].lineNumber-=1;
@@ -298,14 +299,18 @@ public class SugmentGeneration {
                     int cc=0;
                     for(int pos=0;pos<check[1];pos++){
                         sugmentPos[cc]=new lineColumns(pos+check[0], check[2], check[2]+check[3]-1); 
-                        linesStates[pos].columnsNumber-=check[3];
-                        linesStates[pos].columnStart+=check[3];
-
+                        if(linesStates[pos+check[0]].columnStart==check[2]){
+                         
+                            linesStates[pos+check[0]].columnStart+=check[3];
+                        }
+                       
+                          linesStates[pos+check[0]].columnsNumber-=check[3];
                         
                         cc++;
                     }
-                    
+                    // may be theproblem is here
                     for(int z=0;z<check[3];z++){
+                        
                         columnsStates[check[2]+z].lineNumber-=check[1];
                         columnsStates[check[2]+z].lineStart+=check[1];
                     }
@@ -323,7 +328,7 @@ public class SugmentGeneration {
                              
                          if(sugmentsStates[counter4]==0){
                              B4=true;
-                    
+                             sugmentsStates=sugmentHandling(sugmentsStates, counter4);
                         lineColumns[] lc =checkingPossibility4(sugmentsPixelsNumbers[counter4], linesStates);
                         int lN=0;
                         while(lc[lN]!=null){
@@ -344,7 +349,6 @@ public class SugmentGeneration {
                                 
                             }
                         }
-                         
                          result[i]=new sugmentPosition(counter4+1, LC);
                     }
                         counter4++;
