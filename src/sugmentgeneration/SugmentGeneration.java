@@ -4,12 +4,20 @@
  */
 package sugmentgeneration;
 import java.util.Scanner;
+import javax.swing.JFrame;
 
 /**
  *
  * @author Admin
  */
 public class SugmentGeneration {
+    
+    
+    public static void paintSugment(){
+        
+    }
+    
+    //-----------------------------------------------------------
     
     public static int[] getCouples(int pixels, int linesNumber){
         int[]couples=new int[100];
@@ -397,19 +405,14 @@ public class SugmentGeneration {
          
          sugmentPosition[] S= getSugmentsPositions(sugmentsNumber,linesColumnsNumber,sugmentsPercentages);
          
-         for(int ln=0;ln<sugmentsNumber;ln++){
-             System.out.println(S[ln].id);
-             for(int i=0;i<S[ln].linesColumns.length;i++){
-                 System.out.println(S[ln].linesColumns[i].line);
-                 System.out.println(S[ln].linesColumns[i].columnStart);
-                 System.out.println(S[ln].linesColumns[i].columnEnd);
-                 System.out.println("***");
-                
-             }
-              System.out.println("---------------------------------");
-         }
+        
          
-         
+          JFrame frame = new JFrame("Draw Squares");
+        draw panel = new draw(linesColumnsNumber, S);
+        frame.add(panel);
+        frame.setSize(25 + 100, 25 + 30); 
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setVisible(true);
          
          
          
