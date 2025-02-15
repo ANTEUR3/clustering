@@ -37,6 +37,17 @@ public class draw extends JPanel {
         // Draw the smaller squares based on percentages
         for (int i=0;i<sugmenPosition.length;i++) {
              Color randomColor = new Color(rand.nextInt(256), rand.nextInt(256), rand.nextInt(256));
+             int r=randomColor.getRed();
+             int gr=randomColor.getGreen();
+             int b=randomColor.getBlue();
+             while(b>220 && gr>220 && r>220  ){
+                 
+                 randomColor = new Color(rand.nextInt(256), rand.nextInt(256), rand.nextInt(256));
+                   r=randomColor.getRed();
+              gr=randomColor.getGreen();
+              b=randomColor.getBlue();
+                 
+             }
              
              for(int j=0;j<sugmenPosition[i].linesColumns.length;j++){
                   int line=sugmenPosition[i].linesColumns[j].line;

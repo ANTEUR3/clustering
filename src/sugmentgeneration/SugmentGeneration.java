@@ -381,22 +381,23 @@ public class SugmentGeneration {
      */
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
+         System.out.print("please enter the pixels number  ");
+        // Read sugment percentage
+         int pixelsNumber=scanner.nextInt();
         
         // Prompt user
         System.out.print("please enter the number of sugment : ");
         // Read sugments number
         int sugmentsNumber = scanner.nextInt();
         
-        int[] sugmentsPercentages=new int[10];
+        int[] sugmentsPercentages=new int[20];
         // read sugment percentages 
         for(int i=0;i<sugmentsNumber;i++){
              System.out.print("please enter the percentage of sugment  "+(i+1)+": ");
         // Read sugment percentage
               sugmentsPercentages[i]=scanner.nextInt();
         }
-         System.out.print("please enter the pixels number  ");
-        // Read sugment percentage
-         int pixelsNumber=scanner.nextInt();
+        
          // define the number of columns and lines 
          double linesColumnsNumberD=Math.sqrt(pixelsNumber);
          int linesColumnsNumber=(int)linesColumnsNumberD;
