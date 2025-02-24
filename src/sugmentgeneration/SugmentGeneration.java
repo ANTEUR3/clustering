@@ -3,6 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Main.java to edit this template
  */
 package sugmentgeneration;
+import java.util.Random;
 import java.util.Scanner;
 import javax.swing.JFrame;
 
@@ -11,7 +12,6 @@ import javax.swing.JFrame;
  * @author Admin
  */
 public class SugmentGeneration {
-    
     
     public static void paintSugment(){
         
@@ -403,12 +403,120 @@ public class SugmentGeneration {
          int linesColumnsNumber=(int)linesColumnsNumberD;
          
          
-         
-         sugmentPosition[] S= getSugmentsPositions(sugmentsNumber,linesColumnsNumber,sugmentsPercentages);
-         
+         RGB [][]RGBColors=new RGB[sugmentsNumber][1000];
         
+         for(int i=0;i<sugmentsNumber;i++){
+             int R=0;
+             int B=0;
+             int G=0;
+             int Diff=0;
+             Random rand =new Random();
+             int pointsNumber=(sugmentsPercentages[i]*pixelsNumber)/100;
+             switch (i%6) {
+                 case 0:
+                      R=rand.nextInt(120,256);
+                     break;
+                 case 1:
+                       G=rand.nextInt(120,256);
+                     break;
+                 case 2:
+                      B=rand.nextInt(120,256);
+                     break;  
+                 case 3:
+                     R=rand.nextInt(120,256);
+                     B=rand.nextInt(120,256);
+                      Diff=R-B;
+                     while(Diff >20 ||Diff<-20 ){
+                         R=rand.nextInt(50,256);
+                        B=rand.nextInt(50,256);
+                        Diff=R-B;
+                     }
+
+                     break; 
+                  case 4:
+                     G=rand.nextInt(120,256);
+                     B=rand.nextInt(120,256);
+                      Diff=G-B;
+                     while(Diff >20 ||Diff<-20 ){
+                         G=rand.nextInt(50,256);
+                         B=rand.nextInt(50,256);
+                         Diff=G-B;
+                     }
+                     break; 
+                  case 5:
+                     R=rand.nextInt(120,256);
+                     G=rand.nextInt(120,256);
+                      Diff=R-G;
+                     while(Diff >20 ||Diff<-20 ){
+                         R=rand.nextInt(50,256);
+                        G=rand.nextInt(50,256);
+                        Diff=R-G;
+                     }
+                     break;    
+                 default:
+                     throw new AssertionError();
+             }
+             for(int j=0;j<pointsNumber;j++){
+                 switch (i%6) {
+                 case 0:
+                       B=rand.nextInt(0,R-49);
+                       G=rand.nextInt(0,R-49);
+                       
+                     break;
+                 case 1:
+                       B=rand.nextInt(0,G-49);
+                       R=rand.nextInt(0,G-49);
+                      
+                     break;
+                 case 2:
+                       G=rand.nextInt(0,B-49);
+                       R=rand.nextInt(50,B-49);
+                       
+                     break;  
+                 case 3:
+                       G=rand.nextInt(0,256);
+                      
+                       while(G+51>=B || G+51>=R){
+                          G=rand.nextInt(50,256);
+                          }
+                     break; 
+                  case 4:
+                     R=rand.nextInt(50,256);
+                      
+                       while(R+51>=B || R+51>=G){
+                          R=rand.nextInt(50,256);
+                          }
+                     break; 
+                  case 5:
+                     B=rand.nextInt(50,256);
+                     
+                      
+                     while(B+51 >=R ||B+51<=G ){
+                        B=rand.nextInt(50,256);
+                     }
+                     break;    
+                 default:
+                     throw new AssertionError();
+             }
+                 
+                 RGBColors[i][j]=new RGB(R, G, B);
+             }
+         }
          
-          JFrame frame = new JFrame("Draw Squares");
+         
+         for(int o=0;o<sugmentsNumber;o++){
+              int pointsNumber=(sugmentsPercentages[o]*pixelsNumber)/100;
+             for(int k=0;k<pointsNumber;k++){
+                 System.out.println(RGBColors[o][k].R+" "+RGBColors[o][k].G+" "+RGBColors[o][k].B);
+             }
+             System.out.println("-----------------------------------");
+         }
+         
+         
+         
+         
+        sugmentPosition[] S= getSugmentsPositions(sugmentsNumber,linesColumnsNumber,sugmentsPercentages);
+        JFrame frame = new JFrame("Draw Squares");
         draw panel = new draw(linesColumnsNumber, S);
         frame.add(panel);
         frame.setSize(25 + 100, 25 + 30); 
