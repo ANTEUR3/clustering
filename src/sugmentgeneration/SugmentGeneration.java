@@ -414,7 +414,7 @@ public class SugmentGeneration {
              int pointsNumber=(sugmentsPercentages[i]*pixelsNumber)/100;
              switch (i%6) {
                  case 0:
-                      R=rand.nextInt(120,256);
+                      R=rand.nextInt(160,256);
                      break;
                  case 1:
                        G=rand.nextInt(120,256);
@@ -459,8 +459,8 @@ public class SugmentGeneration {
              for(int j=0;j<pointsNumber;j++){
                  switch (i%6) {
                  case 0:
-                       B=rand.nextInt(0,R-49);
-                       G=rand.nextInt(0,R-49);
+                       B=rand.nextInt(0,R-70);
+                       G=rand.nextInt(0,R-70);
                        
                      break;
                  case 1:
@@ -491,7 +491,7 @@ public class SugmentGeneration {
                      B=rand.nextInt(50,256);
                      
                       
-                     while(B+51 >=R ||B+51<=G ){
+                     while(B+51 >=R || B+51>=G ){
                         B=rand.nextInt(50,256);
                      }
                      break;    
@@ -517,7 +517,7 @@ public class SugmentGeneration {
          
         sugmentPosition[] S= getSugmentsPositions(sugmentsNumber,linesColumnsNumber,sugmentsPercentages);
         JFrame frame = new JFrame("Draw Squares");
-        draw panel = new draw(linesColumnsNumber, S);
+        draw panel = new draw(linesColumnsNumber, S,RGBColors);
         frame.add(panel);
         frame.setSize(25 + 100, 25 + 30); 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
