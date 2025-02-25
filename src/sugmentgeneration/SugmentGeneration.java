@@ -76,6 +76,7 @@ public class SugmentGeneration {
                      result[1]=line;
                      result[3]=linesState[i].columnStart;
                      result[4]=linesState[i].columnEnd;
+                     System.out.println("P1");
                      return result;
                 }
                 i++;
@@ -125,7 +126,7 @@ public class SugmentGeneration {
                      result[0]=columnsStates[i].lineStart;
                      result[1]=i;
                      result[2]=column;
-                     System.out.println(result[0]+" "+result[1]+" "+result[2]+" ");
+                       System.out.println("P2");
                      return result;
                 }
                 i++;
@@ -169,6 +170,7 @@ public class SugmentGeneration {
                      result[1]=line;
                      result[2]=linesState[i].columnStart;
                      result[3]=column;
+                       System.out.println("P3");
                      return result;
                 }
                 i++;
@@ -210,7 +212,7 @@ public class SugmentGeneration {
                 }
                 counter++;
             }
-
+  System.out.println("P4");
         return linesColumns;
                     
     }
@@ -256,7 +258,7 @@ public class SugmentGeneration {
                         linesStates[pos+check[0]].columnsNumber=0;
                         linesStates[pos+check[0]].columnStart=5;
                         //
-                        for(int h=0;h<columnsStates.length;h++){
+                        for(int h=check[3];h<columnsStates.length;h++){
                             columnsStates[h].lineNumber-=1;
                             columnsStates[h].lineStart+=1;  
                         }
@@ -342,10 +344,8 @@ public class SugmentGeneration {
                         while(lc[lN]!=null){
                             lN++; 
                         }
-                        System.out.println("France   "+lN);
                         lineColumns[] LC=new lineColumns[lN];
                         for(int g=0;g<lN;g++){
-                            System.out.println("******  "+lc[g].columnStart+"  "+lc[g].columnEnd);
                             LC[g]=new lineColumns(lc[g].line, lc[g].columnStart, lc[g].columnEnd);
                             linesStates[lc[g].line].columnsNumber-=lc[g].columnEnd-lc[g].columnStart+1;
                             linesStates[lc[g].line].columnStart+=lc[g].columnEnd-lc[g].columnStart+1;
@@ -367,12 +367,7 @@ public class SugmentGeneration {
             
         }
         
-        for(int h=0;h<linesStates.length;h++){
-            System.out.println(" "+linesStates[h].columnsNumber);
-            System.out.println(linesStates[h].columnStart+"/"+linesStates[h].columnEnd);
-
-            
-        }
+       
         return result;
     }
 
@@ -456,44 +451,42 @@ public class SugmentGeneration {
                  default:
                      throw new AssertionError();
              }
+             int d=0;
              for(int j=0;j<pointsNumber;j++){
                  switch (i%6) {
                  case 0:
-                       B=rand.nextInt(0,R-70);
-                       G=rand.nextInt(0,R-70);
+                       B=d;
+                       G=d;
+                       d+=3;
                        
                      break;
                  case 1:
-                       B=rand.nextInt(0,G-49);
-                       R=rand.nextInt(0,G-49);
+                       B=d;
+                       R=d;
+                       d+=3;
                       
                      break;
                  case 2:
-                       G=rand.nextInt(0,B-49);
-                       R=rand.nextInt(50,B-49);
+                       G=d;
+                       R=d;
+                       d+=3;
                        
                      break;  
                  case 3:
-                       G=rand.nextInt(0,256);
+                       G=d;
                       
-                       while(G+51>=B || G+51>=R){
-                          G=rand.nextInt(50,256);
-                          }
+                       d+=3;
                      break; 
                   case 4:
-                     R=rand.nextInt(50,256);
+                     R=d;
                       
-                       while(R+51>=B || R+51>=G){
-                          R=rand.nextInt(50,256);
-                          }
+                       d+=3;
                      break; 
                   case 5:
-                     B=rand.nextInt(50,256);
+                     B=d;
                      
                       
-                     while(B+51 >=R || B+51>=G ){
-                        B=rand.nextInt(50,256);
-                     }
+                     d+=3;
                      break;    
                  default:
                      throw new AssertionError();
@@ -504,18 +497,28 @@ public class SugmentGeneration {
          }
          
          
-         for(int o=0;o<sugmentsNumber;o++){
-              int pointsNumber=(sugmentsPercentages[o]*pixelsNumber)/100;
-             for(int k=0;k<pointsNumber;k++){
-                 System.out.println(RGBColors[o][k].R+" "+RGBColors[o][k].G+" "+RGBColors[o][k].B);
-             }
-             System.out.println("-----------------------------------");
-         }
+         //for(int o=0;o<sugmentsNumber;o++){
+             // int pointsNumber=(sugmentsPercentages[o]*pixelsNumber)/100;
+             //for(int k=0;k<pointsNumber;k++){
+               //  System.out.println(RGBColors[o][k].R+" "+RGBColors[o][k].G+" "+RGBColors[o][k].B);
+            // }
+            // System.out.println("-----------------------------------");
+       //  }
          
          
          
          
         sugmentPosition[] S= getSugmentsPositions(sugmentsNumber,linesColumnsNumber,sugmentsPercentages);
+        
+        int g=0;
+while(S[g].id != 2){
+    g++;
+}       
+        System.out.println("///////////");
+for(int v=0;v<S[g].linesColumns.length;v++){
+     //System.out.println(S[g].linesColumns[v].line+" "+S[g].linesColumns[v].columnStart+" "+S[g].linesColumns[v].columnEnd);
+}
+        
         JFrame frame = new JFrame("Draw Squares");
         draw panel = new draw(linesColumnsNumber, S,RGBColors);
         frame.add(panel);

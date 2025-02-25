@@ -17,10 +17,12 @@ public class draw extends JPanel {
     
     public int lineColumnNumber ;
     public sugmentPosition[] sugmenPosition;
+    public RGB[][] colors;
     
-    public draw(int N, sugmentPosition[] sp){
+    public draw(int N, sugmentPosition[] sp,RGB[][] c){
         this.lineColumnNumber=N;
         this.sugmenPosition=sp;
+        this.colors=c;
     }
     @Override
       protected void paintComponent(Graphics g) {
@@ -33,43 +35,46 @@ public class draw extends JPanel {
             
             int lineHeightPercentage=100/lineColumnNumber;
             int lineHeight=(lineHeightPercentage*500)/100;
+            int lineWidth_Percentage=100/lineColumnNumber;
+            int lineWidth_=(lineWidth_Percentage*500)/100;
 
         // Draw the smaller squares based on percentages
         for (int i=0;i<sugmenPosition.length;i++) {
-             Color randomColor = new Color(rand.nextInt(256), rand.nextInt(256), rand.nextInt(256));
-             int r=randomColor.getRed();
-             int gr=randomColor.getGreen();
-             int b=randomColor.getBlue();
-             while(b>220 && gr>220 && r>220  ){
-                 
-                 randomColor = new Color(rand.nextInt(256), rand.nextInt(256), rand.nextInt(256));
-                   r=randomColor.getRed();
-              gr=randomColor.getGreen();
-              b=randomColor.getBlue();
-                 
-             }
              
+             int RGBLine=0;
+             while(RGBLine != sugmenPosition[i].id-1){
+                 RGBLine++;
+             }
+             int indiceColumn=0;
              for(int j=0;j<sugmenPosition[i].linesColumns.length;j++){
+                   
                   int line=sugmenPosition[i].linesColumns[j].line;
                   int columnStart=sugmenPosition[i].linesColumns[j].columnStart;
                   int columnEnd=sugmenPosition[i].linesColumns[j].columnEnd;
-                  System.out.println(line+"--"+columnStart+"--"+columnEnd);
-                  int lineWidth= columnEnd-columnStart+1;
-                  int linePercentage=(lineWidth*100)/lineColumnNumber;
-                  lineWidth=(linePercentage*500)/100;
                   
-                  double lineStartPercentage=line*100/lineColumnNumber;
-                  double columnStartPercentage=columnStart*100/lineColumnNumber;
+                 
                   
-                  
-                  int lineStart=(int)lineStartPercentage*500/100;
-                  int columnStart_=(int)columnStartPercentage*500/100;
-                              g.setColor(randomColor);
+                   double lineStartPercentage=line*100/lineColumnNumber;
+                   int lineStart=(int)lineStartPercentage*500/100;
+                    double columnStartPercentage=columnStart*100/lineColumnNumber;
+                   int columnStart_=(int)columnStartPercentage*500/100;
 
-                   g.fillRect(columnStart_, 500-lineStart -lineHeight, lineWidth, lineHeight);
+                  int lineWidth= columnEnd-columnStart+1;
+                  for(int h=0;h<lineWidth;h++){
+                       Color color=new Color(colors[RGBLine][indiceColumn].R, colors[RGBLine][indiceColumn].G, colors[RGBLine][indiceColumn].B);
+                       g.setColor(color);
+indiceColumn++;
+                   g.fillRect(columnStart_+lineWidth_*h, 500-lineStart -lineHeight, lineWidth_, lineHeight);
 
                       // Small square border
-                   g.fillRect(columnStart_, 500-lineStart -lineHeight, lineWidth, lineHeight);
+                   g.fillRect(columnStart_+lineWidth_*h, 500-lineStart -lineHeight, lineWidth_, lineHeight);                      
+                  }
+                  
+                  
+                  
+
+                  
+                 
              }
 
         }
