@@ -398,7 +398,7 @@ public class SugmentGeneration {
          int linesColumnsNumber=(int)linesColumnsNumberD;
          
          
-         RGB [][]RGBColors=new RGB[sugmentsNumber][1000];
+         RGB [][]RGBColors=new RGB[sugmentsNumber][1000000];
         
          for(int i=0;i<sugmentsNumber;i++){
              int R=0;
@@ -455,38 +455,42 @@ public class SugmentGeneration {
              for(int j=0;j<pointsNumber;j++){
                  switch (i%6) {
                  case 0:
-                       B=d;
-                       G=d;
-                       d+=3;
-                       
+                       B=rand.nextInt(0,R-50);
+                       G=rand.nextInt(0,R-50); 
                      break;
                  case 1:
-                       B=d;
-                       R=d;
-                       d+=3;
+                       B=rand.nextInt(0,G-50);
+                       R=rand.nextInt(0,G-50); 
                       
                      break;
                  case 2:
-                       G=d;
-                       R=d;
-                       d+=3;
+                       G=rand.nextInt(0,B-50);
+                       R=rand.nextInt(0,B-50); 
                        
                      break;  
                  case 3:
-                       G=d;
+                       G=rand.nextInt(0,256);
                       
-                       d+=3;
+                       while(G+50 >B  ||G+50 > R ){
+                                                G=rand.nextInt(0,256);
+
+                 }
                      break; 
                   case 4:
-                     R=d;
+                      R=rand.nextInt(0,256);
                       
-                       d+=3;
+                       while(R+50 >B  ||R+50 > G ){
+                        R=rand.nextInt(0,256);
+
+                 }
                      break; 
                   case 5:
-                     B=d;
-                     
+                    B=rand.nextInt(0,256);
                       
-                     d+=3;
+                       while(B+50 >R  ||B+50 > G ){
+                        B=rand.nextInt(0,256);
+
+                 }
                      break;    
                  default:
                      throw new AssertionError();
@@ -497,27 +501,62 @@ public class SugmentGeneration {
          }
          
          
-         //for(int o=0;o<sugmentsNumber;o++){
-             // int pointsNumber=(sugmentsPercentages[o]*pixelsNumber)/100;
-             //for(int k=0;k<pointsNumber;k++){
-               //  System.out.println(RGBColors[o][k].R+" "+RGBColors[o][k].G+" "+RGBColors[o][k].B);
-            // }
-            // System.out.println("-----------------------------------");
-       //  }
+         PointPosition [] pointArray=new PointPosition[pixelsNumber];
          
+         Random random=new Random();
+         for(int i=0;i<pixelsNumber;i++){
+             pointArray[i]=new PointPosition(random.nextInt(-10000,10000), random.nextInt(-10000,10000));
+         }
          
+          for(int i=0;i<pixelsNumber;i++){
+              System.out.println(pointArray[i].x + " -- "+pointArray[i].y);
+          }
+          
+          int minX =pointArray[0].x;
+          int maxX=pointArray[0].x;
+          
+          int minY =pointArray[0].y;
+          int maxY=pointArray[0].y;
+          
+          for(int i=1;i<pixelsNumber;i++){
+              if(pointArray[i].x>maxX){
+                  maxX=pointArray[i].x;
+              }
+              if(pointArray[i].x<minX){
+                  minX=pointArray[i].x;
+              } 
+          }
+          
+          for(int i=1;i<pixelsNumber;i++){
+              if(pointArray[i].y>maxY){
+                  maxY=pointArray[i].y;
+              }
+              if(pointArray[i].y<minY){
+                  minY=pointArray[i].y;
+              }    
+          }
+            
+          int DistanceX=maxX-minX;
+          int DistanceY=maxY-minY;
+          
+          
+          for(int i=0;i<pixelsNumber;i++){
+              pointArray[i].x=(pointArray[i].x-minX)*255/DistanceX;
+              pointArray[i].y=(pointArray[i].y-minY)*255/DistanceY;
+             
+          }
+          
          
+           for(int i=0;i<pixelsNumber;i++){
+              System.out.println(pointArray[i].x + " -- "+pointArray[i].y);
+          }
+           
+           System.out.println("minX  "+minX +" maxX  "+maxX);
+            System.out.println("minY  "+minY +" maxY  "+maxY);
          
         sugmentPosition[] S= getSugmentsPositions(sugmentsNumber,linesColumnsNumber,sugmentsPercentages);
         
-        int g=0;
-while(S[g].id != 2){
-    g++;
-}       
-        System.out.println("///////////");
-for(int v=0;v<S[g].linesColumns.length;v++){
-     //System.out.println(S[g].linesColumns[v].line+" "+S[g].linesColumns[v].columnStart+" "+S[g].linesColumns[v].columnEnd);
-}
+       
         
         JFrame frame = new JFrame("Draw Squares");
         draw panel = new draw(linesColumnsNumber, S,RGBColors);
