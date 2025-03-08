@@ -23,7 +23,7 @@ public class Mavenproject1 {
     
 
     public static void main(String[] args) {
-         int numClusters = 5; // Number of Gaussian components
+         int numClusters = 2; // Number of Gaussian components
         int numPointsPerCluster = 10000; // Points per component
         int dimensions = 2; // 2D data
 
@@ -72,24 +72,68 @@ public class Mavenproject1 {
         // Generate data points
         List<DoublePoint> dataPoints = new ArrayList<>();
         for (int i = 0; i < numClusters; i++) {
-            for (int j = 0; j < 100; j++) {
+            for (int j = 0; j < 3; j++) {
                 double[] point = gmm.getComponents().get(i).getDistribution().sample();
                 dataPoints.add(new DoublePoint(point));
             }
-                            dataPoints.add(new DoublePoint(new double[] {-100.0, -100.0}));
 
         }
 
         // Output the generated 2D data
+        
+        for (DoublePoint point : dataPoints) {
+            double[] T=point.getPoint();
+            System.out.println("   "+T[0]+"/"+T[1]);
+            
+            //System.out.println(coords[0] + ", " + coords[1]);
+        }
+        
+        DoublePoint first =dataPoints.get(0);
+        double[] Table=first.getPoint();    
+        double minX=Table[0];
+        double maxX=Table[0];
         for (DoublePoint point : dataPoints) {
             double[] coords = point.getPoint();
-            System.out.println(coords[0] + ", " + coords[1]);
+            if(coords[0]>maxX){
+                maxX=coords[0];
+            }
+             if(coords[0]<minX){
+                minX=coords[0];
+            }
+            //System.out.println(coords[0] + ", " + coords[1]);
         }
-
-        //Example of getting the probability of a point.
-        double[] testPoint = {1.0,1.0};
-        double probability = gmm.probability(testPoint);
-        //System.out.println("Probability of test point: " + probability);
+        
+        double minY=Table[1];
+        double maxY=Table[1];
+        for (DoublePoint point : dataPoints) {
+            double[] coords = point.getPoint();
+            if(coords[01]>maxY){
+                maxY=coords[1];
+            }
+             if(coords[1]<minY){
+                minY=coords[1];
+            }
+            //System.out.println(coords[0] + ", " + coords[1]);
+        }
+  
+        
+        double DistanceX=maxX-minX;
+        double DistanceY=maxY-minY;
+        
+         for (int i=0;i<dataPoints.size();i++) {
+               DoublePoint item=dataPoints.get(i);
+               double[] T=item.getPoint();
+               T[0]=T[0]-minX;
+               T[0]=T[0]*255/DistanceX;
+               dataPoints.get(i).getPoint()[0]=T[0]-(T[0]%1);
+               
+               T[1]=T[1]-minY;
+               T[1]=T[1]*255/DistanceY;
+               dataPoints.get(i).getPoint()[1]=T[1]-(T[1]%1);
+        }
+         
+         
+         
 
     }
 }
