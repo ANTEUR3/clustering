@@ -12,6 +12,7 @@ import org.apache.commons.math3.random.Well19937c;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.JFrame;
 /**
  *
  * @author Admin
@@ -23,7 +24,7 @@ public class Mavenproject1 {
     
 
     public static void main(String[] args) {
-         int numClusters = 2; // Number of Gaussian components
+         int numClusters = 5; // Number of Gaussian components
         int numPointsPerCluster = 10000; // Points per component
         int dimensions = 2; // 2D data
 
@@ -72,7 +73,7 @@ public class Mavenproject1 {
         // Generate data points
         List<DoublePoint> dataPoints = new ArrayList<>();
         for (int i = 0; i < numClusters; i++) {
-            for (int j = 0; j < 3; j++) {
+            for (int j = 0; j < 2000; j++) {
                 double[] point = gmm.getComponents().get(i).getDistribution().sample();
                 dataPoints.add(new DoublePoint(point));
             }
@@ -132,7 +133,12 @@ public class Mavenproject1 {
                dataPoints.get(i).getPoint()[1]=T[1]-(T[1]%1);
         }
          
-         
+         JFrame frame = new JFrame("Draw Squares");
+        draw panel = new draw(100, dataPoints);
+        frame.add(panel);
+        frame.setSize(25 + 100, 25 + 30); 
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setVisible(true);
          
 
     }
