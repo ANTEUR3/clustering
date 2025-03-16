@@ -38,11 +38,12 @@ public class draw extends JPanel {
         super.paintComponent(g);
 
         // Draw the general square
+            int squareDemension=lineColumnNumber*4;
             g.setColor(Color.yellow);
-            g.drawRect(100, 100, 500, 500);
-            Random rand = new Random();
+            g.drawRect(0, 0, squareDemension, squareDemension);
             
-            int square=500/lineColumnNumber;
+            
+            int square=squareDemension/lineColumnNumber;
         
 
         // Draw the smaller squares based on percentages
@@ -54,7 +55,7 @@ public class draw extends JPanel {
                        Color color=new Color(R,G,100);
                        g.setColor(color);
 
-                   g.fillRect(100+(i%lineColumnNumber)*square,100+((int)(i/lineColumnNumber))*square,square,square);
+                   g.fillRect((i%lineColumnNumber)*square,((int)(i/lineColumnNumber))*square,square,square);
 
                       // Small square border
              

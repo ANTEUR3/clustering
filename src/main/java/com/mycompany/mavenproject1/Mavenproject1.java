@@ -12,6 +12,7 @@ import org.apache.commons.math3.random.Well19937c;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 import javax.swing.JFrame;
 /**
  *
@@ -24,8 +25,33 @@ public class Mavenproject1 {
     
 
     public static void main(String[] args) {
-         int numClusters = 5; // Number of Gaussian components
-        int numPointsPerCluster = 10000; // Points per component
+        
+        
+         Scanner scanner = new Scanner(System.in);
+         System.out.print("please enter the pixels number  ");
+        // Read points number
+         int pointsNumber=scanner.nextInt();
+         
+         System.out.print("please enter the sugments  number  ");
+        // Read sugment number
+         int numClusters =scanner.nextInt();
+        
+       
+         double [] percentages=new double[numClusters];
+         // Read the sugments percentages
+         for(int i=0;i<numClusters;i++){
+             System.out.print("Percentage of cluster "+(i+1)+" ");
+             percentages[i]=scanner.nextInt();
+         }
+       
+         
+         // set the sugment point number based on their percentage
+         double [] sugmentsPoints=new double[numClusters];
+          for(int i=0;i<numClusters;i++){
+             sugmentsPoints[i]=(percentages[i]*pointsNumber)/100;
+         }
+         
+
         int dimensions = 2; // 2D data
 
         RandomGenerator random = new Well19937c();
@@ -33,28 +59,58 @@ public class Mavenproject1 {
         // GMM parameters (randomly generated for example)
         double[] weights = new double[numClusters];
         MultivariateNormalDistribution[] distributions = new MultivariateNormalDistribution[numClusters];
-
+        
+        System.out.println("Clusters informations ! ");
+        
         for (int i = 0; i < numClusters; i++) {
+            System.out.println("Informations of cluster "+(i+1));
             weights[i] = random.nextDouble();
 
             double[] means = new double[dimensions];
             double[][] covariances = {{1,0},{0,1}};
 
-            // Random means
+            // set means
+            System.out.println("please enter means for this cluster");
             for (int j = 0; j < dimensions; j++) {
-               means[j] = random.nextGaussian() * 5; // Adjust spread as needed
+                System.out.println("mean "+(j+1)+" of cluster " + (i+1));
+               means[j] = scanner.nextDouble(); // Adjust spread as needed
             }
-
-            // Random covariance matrix (simplified, positive-definite)
+            // set covariance 
+            System.out.println("please enter covariance matrix  for this cluster");
             for (int j = 0; j < dimensions; j++) {
+               
                 for (int k = 0; k < dimensions; k++) {
-                    //covariances[j][k] = random.nextGaussian();
-                    if (j == k) {
-                    //  covariances[j][k] = Math.abs(covariances[j][k]) + 20; // Ensure diagonal dominance
+                     System.out.println("line "+j+" column "+ k);
+                    covariances[j][k] = scanner.nextDouble();
+                }
+            }
+            
+            boolean check=true;
+            for(int m=0;m<dimensions;m++){
+                if(covariances[m][m] <=0){
+                    check=false;
+                } 
+            }
+            double diagonalProduct=1;
+            double otherBoxProduct=1;
+             for(int d=0;d<dimensions;d++){
+                for(int h=0;h<dimensions;h++){
+                    if(d==h){
+                        diagonalProduct*=covariances[h][h];
+                    }
+                    else{
+                        otherBoxProduct*=covariances[d][h];
                     }
                 }
             }
-
+             if(diagonalProduct<=otherBoxProduct){
+                 check=false;
+             }
+             
+             if(!check){
+                 System.out.println("There is an error in the covariance matrix ");  
+             }
+             
             distributions[i] = new MultivariateNormalDistribution(means, covariances);
         }
 
@@ -73,7 +129,7 @@ public class Mavenproject1 {
         // Generate data points
         List<DoublePoint> dataPoints = new ArrayList<>();
         for (int i = 0; i < numClusters; i++) {
-            for (int j = 0; j < 2000; j++) {
+            for (int j = 0; j < sugmentsPoints[i]; j++) {
                 double[] point = gmm.getComponents().get(i).getDistribution().sample();
                 dataPoints.add(new DoublePoint(point));
             }
@@ -133,8 +189,10 @@ public class Mavenproject1 {
                dataPoints.get(i).getPoint()[1]=T[1]-(T[1]%1);
         }
          
+         int pixelNumberSquareRoot=(int)Math.sqrt(pointsNumber);
+         
          JFrame frame = new JFrame("Draw Squares");
-        draw panel = new draw(100, dataPoints);
+        draw panel = new draw(pixelNumberSquareRoot, dataPoints);
         frame.add(panel);
         frame.setSize(25 + 100, 25 + 30); 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
