@@ -27,23 +27,27 @@ public class draw extends JPanel {
     
     public int lineColumnNumber ;
     public    List<DoublePoint> points;
+    public int width;
+    public int height;
    
     
-    public draw(int N,List<DoublePoint> points){
+    public draw(int N,List<DoublePoint> points,int w,int h){
         this.lineColumnNumber=N;
         this.points=points;
+        this.height=h;
+        this.width=w;
     }
     @Override
       protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
         // Draw the general square
-            int squareDemension=lineColumnNumber*4;
+            
+            
             g.setColor(Color.yellow);
-            g.drawRect(0, 0, squareDemension, squareDemension);
+            g.drawRect(100, 0, this.width, this.height);
             
             
-            int square=squareDemension/lineColumnNumber;
         
 
         // Draw the smaller squares based on percentages
@@ -52,16 +56,10 @@ public class draw extends JPanel {
             double[] table=point.getPoint();
             int R=(int)table[0];
             int G=(int)table[1];
-                       Color color=new Color(R,G,100);
+                       Color color=new Color(R,G,255);
                        g.setColor(color);
 
-                   g.fillRect((i%lineColumnNumber)*square,((int)(i/lineColumnNumber))*square,square,square);
-
-                      // Small square border
-             
-            
-            
-
+                   g.fillRect((i%this.width)*1+100,((int)(i/this.width)),1,1);
         }
         
 }

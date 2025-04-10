@@ -28,9 +28,15 @@ public class Mavenproject1 {
         
         
          Scanner scanner = new Scanner(System.in);
-         System.out.print("please enter the pixels number  ");
+         System.out.print("please enter the Image width  ");
         // Read points number
-         int pointsNumber=scanner.nextInt();
+      
+         int Imagewidth=scanner.nextInt();
+         System.out.print("please enter the image height ");
+        // Read points number
+         int ImageHeight=scanner.nextInt();
+         
+           int pointsNumber=ImageHeight*Imagewidth;
          
          System.out.print("please enter the sugments  number  ");
         // Read sugment number
@@ -49,9 +55,7 @@ public class Mavenproject1 {
          double [] sugmentsPoints=new double[numClusters];
           for(int i=0;i<numClusters;i++){
              sugmentsPoints[i]=(percentages[i]*pointsNumber)/100;
-         }
-         
-
+         }   
         int dimensions = 2; // 2D data
 
         RandomGenerator random = new Well19937c();
@@ -67,7 +71,7 @@ public class Mavenproject1 {
             weights[i] = random.nextDouble();
 
             double[] means = new double[dimensions];
-            double[][] covariances = {{1,0},{0,1}};
+            double[][] covariances = new double[dimensions][dimensions];
 
             // set means
             System.out.println("please enter means for this cluster");
@@ -81,7 +85,7 @@ public class Mavenproject1 {
                
                 for (int k = 0; k < dimensions; k++) {
                      System.out.println("line "+j+" column "+ k);
-                    covariances[j][k] = scanner.nextDouble();
+                     covariances[j][k] = scanner.nextDouble();
                 }
             }
             
@@ -108,10 +112,14 @@ public class Mavenproject1 {
              }
              
              if(!check){
-                 System.out.println("There is an error in the covariance matrix ");  
+                 System.out.println("There is an error in the covariance matrix please try again ");  
+                 i--;
+                 
              }
-             
-            distributions[i] = new MultivariateNormalDistribution(means, covariances);
+             else{
+                  distributions[i] = new MultivariateNormalDistribution(means, covariances);
+
+             } 
         }
 
         // Normalize weights
@@ -141,7 +149,6 @@ public class Mavenproject1 {
         for (DoublePoint point : dataPoints) {
             double[] T=point.getPoint();
             System.out.println("   "+T[0]+"/"+T[1]);
-            
             //System.out.println(coords[0] + ", " + coords[1]);
         }
         
@@ -164,7 +171,7 @@ public class Mavenproject1 {
         double maxY=Table[1];
         for (DoublePoint point : dataPoints) {
             double[] coords = point.getPoint();
-            if(coords[01]>maxY){
+            if(coords[1]>maxY){
                 maxY=coords[1];
             }
              if(coords[1]<minY){
@@ -192,7 +199,7 @@ public class Mavenproject1 {
          int pixelNumberSquareRoot=(int)Math.sqrt(pointsNumber);
          
          JFrame frame = new JFrame("Draw Squares");
-        draw panel = new draw(pixelNumberSquareRoot, dataPoints);
+        draw panel = new draw(pixelNumberSquareRoot, dataPoints,Imagewidth,ImageHeight);
         frame.add(panel);
         frame.setSize(25 + 100, 25 + 30); 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
