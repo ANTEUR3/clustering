@@ -29,13 +29,18 @@ public class draw extends JPanel {
     public    List<DoublePoint> points;
     public int width;
     public int height;
+    public SugmentsPositions[] positions;
+    public int sugmentsNumber;
+            
+            
    
     
-    public draw(int N,List<DoublePoint> points,int w,int h){
-        this.lineColumnNumber=N;
+    public draw(List<DoublePoint> points,int w,int h,SugmentsPositions[] Positions,int s){
         this.points=points;
         this.height=h;
         this.width=w;
+        this.positions=Positions;
+        this.sugmentsNumber=s;
     }
     @Override
       protected void paintComponent(Graphics g) {
@@ -50,17 +55,51 @@ public class draw extends JPanel {
             
         
 
-        // Draw the smaller squares based on percentages
-        for (int i=0;i<points.size();i++) {
-            DoublePoint point=this.points.get(i);
+        //Draw the smaller squares based on percentages
+       
+        int[] sugmentsIndexes=new int[this.sugmentsNumber];
+        sugmentsIndexes[0]=0;
+        int index=1;
+        for(int k=1;k<this.height*this.width;k++){
+            DoublePoint point=this.points.get(k);
             double[] table=point.getPoint();
-            int R=(int)table[0];
-            int G=(int)table[1];
-                       Color color=new Color(R,G,255);
-                       g.setColor(color);
-
-                   g.fillRect((i%this.width)*1+100,((int)(i/this.width)),1,1);
+            if(table[0]==-10000){
+                    sugmentsIndexes[index]=k+1;
+                    index++;  
+            }
+                    
         }
+       
+        
+        for(int i=0;i<this.positions.length;i++){
+            if(positions[i]!=null){
+                int line=this.positions[i].lineId;
+                int columnStart=this.positions[i].columnStart;
+                int columnEnd=this.positions[i].columnEnd;
+                int sugmentId=this.positions[i].sugmentId-1;
+                for(int j=0;j<columnEnd-columnStart+1;j++){
+                    DoublePoint P=this.points.get(sugmentsIndexes[sugmentId]);
+                    double[] T=P.getPoint();
+                    if(T[0]!=-10000){
+                         Color color=new Color((int)T[0],(int)T[1],127);
+                        g.setColor(color);
+                   g.fillRect((columnStart+j)+100,(line),1,1);
+                
+                    }
+                    sugmentsIndexes[sugmentId]++;
+
+                }
+               
+            }
+            
+                    
+                      
+        }
+         for(int h=0;h<sugmentsNumber;h++){
+            System.out.println("///"+sugmentsIndexes[h]);
+        }
+        
+        
         
 }
     
