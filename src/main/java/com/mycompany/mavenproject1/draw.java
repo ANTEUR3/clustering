@@ -31,16 +31,18 @@ public class draw extends JPanel {
     public int height;
     public SugmentsPositions[] positions;
     public int sugmentsNumber;
+    public pixel[] pixels;
             
             
    
     
-    public draw(List<DoublePoint> points,int w,int h,SugmentsPositions[] Positions,int s){
+    public draw(List<DoublePoint> points,int w,int h,SugmentsPositions[] Positions,int s,pixel[] pixelsTable){
         this.points=points;
         this.height=h;
         this.width=w;
         this.positions=Positions;
         this.sugmentsNumber=s;
+        this.pixels=pixelsTable;
     }
     @Override
       protected void paintComponent(Graphics g) {
@@ -63,7 +65,7 @@ public class draw extends JPanel {
         for(int k=1;k<this.height*this.width;k++){
             DoublePoint point=this.points.get(k);
             double[] table=point.getPoint();
-            if(table[0]==-10000){
+            if(pixels[k].R==-10000){
                     sugmentsIndexes[index]=k+1;
                     index++;  
             }
@@ -79,9 +81,10 @@ public class draw extends JPanel {
                 int sugmentId=this.positions[i].sugmentId-1;
                 for(int j=0;j<columnEnd-columnStart+1;j++){
                     DoublePoint P=this.points.get(sugmentsIndexes[sugmentId]);
+                    pixel pixel=new pixel(this.pixels[sugmentsIndexes[sugmentId]].R,this.pixels[sugmentsIndexes[sugmentId]].G,this.pixels[sugmentsIndexes[sugmentId]].B);
                     double[] T=P.getPoint();
                     if(T[0]!=-10000){
-                         Color color=new Color((int)T[0],(int)T[1],127);
+                         Color color=new Color((int)pixel.R,(int)pixel.G,(int)pixel.B);
                         g.setColor(color);
                    g.fillRect((columnStart+j)+100,(line),1,1);
                 

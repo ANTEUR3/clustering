@@ -4,7 +4,6 @@
 
 package com.mycompany.mavenproject1;
 import org.apache.commons.math3.distribution.MultivariateNormalDistribution;
-import org.apache.commons.math3.ml.clustering.Cluster;
 import org.apache.commons.math3.ml.clustering.DoublePoint;
 
 import org.apache.commons.math3.random.RandomGenerator;
@@ -197,7 +196,7 @@ public class Mavenproject1 {
           for(int i=0;i<numClusters;i++){
              sugmentsPoints[i]=(int)(percentages[i]*pointsNumber)/100;
          }   
-        int dimensions = 2; // 2D data
+        int dimensions = 3; // 2D data
 
         RandomGenerator random = new Well19937c();
 
@@ -274,51 +273,69 @@ public class Mavenproject1 {
 
         // Create the GMM
         GaussianMixtureModel gmm = new GaussianMixtureModel(weights, distributions);
-
+        pixel[] pixels=new pixel[900000];
+        int pixelsIndex=0;
         // Generate data points
         List<DoublePoint> dataPoints = new ArrayList<>();
         for (int i = 0; i < numClusters; i++) {
             for (int j = 0; j < sugmentsPoints[i]; j++) {
                 double[] point = gmm.getComponents().get(i).getDistribution().sample();
+                pixels[pixelsIndex]=new pixel(point[0],point[1],point[1]);  
+                pixelsIndex++;
                 dataPoints.add(new DoublePoint(point));
             }
             double[] separate=new double[2];
             separate[0]=-10000;
             separate[1]=61000;
             dataPoints.add(new DoublePoint(separate));
-
+            pixels[pixelsIndex]=new pixel(-10000,-10000,-10000);  
+            pixelsIndex++;
 
         }
 
-        // Output the generated 2D data
-        
-        for (DoublePoint point : dataPoints) {
-            double[] T=point.getPoint();
-            System.out.println("   "+T[0]+"/"+T[1]);
-            //System.out.println(coords[0] + ", " + coords[1]);
+     
+        for(int i=0;i<10;i++){
+            System.out.println("--"+pixels[i].R+" "+pixels[i].G+" "+pixels[i].B);
         }
         
         DoublePoint first =dataPoints.get(0);
         double[] Table=first.getPoint();    
-        double minX=Table[0];
-        double maxX=Table[0];
-        for (DoublePoint point : dataPoints) {
-           
-            double[] coords = point.getPoint();
-             if(coords[0]!=-10000){
-                 if(coords[0]>maxX){
-                maxX=coords[0];
+        double minX=pixels[0].R;
+        double maxX=pixels[0].R;
+        double minY=pixels[0].G;
+        double maxY=pixels[0].G;
+         double minZ=pixels[0].B;
+        double maxZ=pixels[0].B;
+        for(int i=0;i<ImageHeight*Imagewidth+numClusters;i++){
+            if(pixels[i]!=null){
+                if(pixels[i].R!=-10000){
+                   if(pixels[i].R>maxX){
+                    maxX=pixels[i].R;
+                }
+                if(pixels[i].R<minX){
+                    minX=pixels[i].R;
+                } 
+                
+                if(pixels[i].G>maxY){
+                    maxY=pixels[i].G;
+                }
+                if(pixels[i].G<minY){
+                    minY=pixels[i].G;
+                }
+                
+                   if(pixels[i].B>maxZ){
+                    maxZ=pixels[i].B;
+                }
+                if(pixels[i].B<minZ){
+                    minZ=pixels[i].B;
+                }
+                }
+                
             }
-             if(coords[0]<minX){
-                minX=coords[0];
-            }
-            }
-           
-            //System.out.println(coords[0] + ", " + coords[1]);
         }
         
-        double minY=Table[1];
-        double maxY=Table[1];
+        
+       
         for (DoublePoint point : dataPoints) {
             double[] coords = point.getPoint();
             if(coords[0]!=-10000){
@@ -336,6 +353,25 @@ public class Mavenproject1 {
         
         double DistanceX=maxX-minX;
         double DistanceY=maxY-minY;
+        double DistanceZ=maxZ-minZ;
+        
+         for(int i=0;i<ImageHeight*Imagewidth+numClusters;i++){
+             if(pixels[i]!=null){
+                 if(pixels[i].R!=-10000){
+                     pixels[i].R=pixels[i].R-minX;
+                     pixels[i].R= (int)(pixels[i].R*255/DistanceX);
+                     
+                     pixels[i].G=pixels[i].G-minY;
+                     pixels[i].G= (int)(pixels[i].G*255/DistanceY);
+                     
+                     pixels[i].B=pixels[i].B-minZ;
+                     pixels[i].B= (int)(pixels[i].B*255/DistanceZ);
+                 }
+             }
+         }
+          for(int i=0;i<10;i++){
+            System.out.println("--"+pixels[i].R+" "+pixels[i].G+" "+pixels[i].B);
+        }
         
          for (int i=0;i<dataPoints.size();i++) {
                DoublePoint item=dataPoints.get(i);
@@ -363,7 +399,7 @@ public class Mavenproject1 {
         
         
         JFrame frame = new JFrame("Draw Squares");
-        draw panel = new draw( dataPoints,Imagewidth,ImageHeight,Positions,numClusters);
+        draw panel = new draw( dataPoints,Imagewidth,ImageHeight,Positions,numClusters,pixels);
         frame.add(panel);
         frame.setSize(25 + 100, 25 + 30); 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
