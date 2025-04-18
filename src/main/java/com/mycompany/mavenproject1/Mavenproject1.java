@@ -4,7 +4,6 @@
 
 package com.mycompany.mavenproject1;
 import org.apache.commons.math3.distribution.MultivariateNormalDistribution;
-import org.apache.commons.math3.ml.clustering.DoublePoint;
 
 import org.apache.commons.math3.random.RandomGenerator;
 import org.apache.commons.math3.random.Well19937c;
@@ -162,10 +161,7 @@ public class Mavenproject1 {
 
     public static void main(String[] args) {
         
-        int[] r=getCouples(320,80,20);
-        for(int i=0;i<r.length;i+=2){
-            System.out.println("  "+r[i]+" "+r[i+1]);
-        }
+       
 
          Scanner scanner = new Scanner(System.in);
          System.out.print("please enter the Image width  ");
@@ -176,7 +172,7 @@ public class Mavenproject1 {
         // Read points number
          int ImageHeight=scanner.nextInt();
          
-           int pointsNumber=ImageHeight*Imagewidth;
+         int pointsNumber=ImageHeight*Imagewidth;
          
          System.out.print("please enter the sugments  number  ");
         // Read sugment number
@@ -189,7 +185,27 @@ public class Mavenproject1 {
              System.out.print("Percentage of cluster "+(i+1)+" ");
              percentages[i]=scanner.nextInt();
          }
-       
+         
+         
+         double[][] overlap=new double [numClusters][numClusters];
+         
+         for(int i=0;i<numClusters;i++){
+             for (int j=i;j<numClusters;j++){
+                  if(i==j){
+                      overlap[i][j]=1;
+                  }else{
+                      int c1=i+1;
+                      int c2=j+1;
+                      System.out.println("Enter the overlap between cluster "+c1+" and cluster "+c2);
+                      overlap[i][j]=scanner.nextFloat();
+                      overlap[j][i]=  overlap[i][j];
+                  }
+             } 
+         }
+         
+    
+         
+         
          
          // set the sugment point number based on their percentage
          int [] sugmentsPoints=new int[numClusters];
@@ -212,20 +228,51 @@ public class Mavenproject1 {
 
             double[] means = new double[dimensions];
             double[][] covariances = new double[dimensions][dimensions];
-
+            System.out.println("com.mycompany.mavenproject1.Mavenproject1.main()");
             // set means
-            System.out.println("please enter means for this cluster");
-            for (int j = 0; j < dimensions; j++) {
-                System.out.println("mean "+(j+1)+" of cluster " + (i+1));
-               means[j] = scanner.nextDouble(); // Adjust spread as needed
-            }
+               if(i!=0){
+                       double overlap_=0.0;
+                       int indice=-1;
+                       for(int k=i-1;k>=0;k--){
+                           if(overlap[i][k]>overlap_){
+                               indice=k;
+                               overlap_=overlap[i][k];
+                           }
+                       }
+                   
+                        System.out.println("overlap "+overlap_);
+                        double different=10-(overlap_*10);
+                        for (int j = 0; j < dimensions; j++) {
+                              means[j] = distributions[indice].getMeans()[j]+different;
+                         }               
+                     
+                   
+                 }else{
+                    for (int j = 0; j < dimensions; j++) {
+                              means[j] = random.nextDouble();
+                         } 
+               }
+            
+            
             // set covariance 
             System.out.println("please enter covariance matrix  for this cluster");
             for (int j = 0; j < dimensions; j++) {
-               
                 for (int k = 0; k < dimensions; k++) {
-                     System.out.println("line "+j+" column "+ k);
-                     covariances[j][k] = scanner.nextDouble();
+                    if(k==j){
+                       covariances[j][k] = 3;
+                       // covariances[j][k]=scanner.nextInt();
+                    }else{
+                        if(j==0){
+                           covariances[j][k] = 0;
+                           //covariances[j][k]=scanner.nextInt();
+                        }
+                        else{
+                            covariances[j][k]=covariances[j-1][j-1]-2;
+                             //covariances[j][k]=scanner.nextInt();
+                        }
+
+                    }
+                     
                 }
             }
             
@@ -273,33 +320,23 @@ public class Mavenproject1 {
 
         // Create the GMM
         GaussianMixtureModel gmm = new GaussianMixtureModel(weights, distributions);
-        pixel[] pixels=new pixel[900000];
+        pixel[] pixels=new pixel[ImageHeight*Imagewidth+numClusters];
         int pixelsIndex=0;
         // Generate data points
-        List<DoublePoint> dataPoints = new ArrayList<>();
         for (int i = 0; i < numClusters; i++) {
             for (int j = 0; j < sugmentsPoints[i]; j++) {
                 double[] point = gmm.getComponents().get(i).getDistribution().sample();
                 pixels[pixelsIndex]=new pixel(point[0],point[1],point[1]);  
                 pixelsIndex++;
-                dataPoints.add(new DoublePoint(point));
             }
-            double[] separate=new double[2];
-            separate[0]=-10000;
-            separate[1]=61000;
-            dataPoints.add(new DoublePoint(separate));
             pixels[pixelsIndex]=new pixel(-10000,-10000,-10000);  
             pixelsIndex++;
 
         }
 
      
-        for(int i=0;i<10;i++){
-            System.out.println("--"+pixels[i].R+" "+pixels[i].G+" "+pixels[i].B);
-        }
+       
         
-        DoublePoint first =dataPoints.get(0);
-        double[] Table=first.getPoint();    
         double minX=pixels[0].R;
         double maxX=pixels[0].R;
         double minY=pixels[0].G;
@@ -336,19 +373,7 @@ public class Mavenproject1 {
         
         
        
-        for (DoublePoint point : dataPoints) {
-            double[] coords = point.getPoint();
-            if(coords[0]!=-10000){
-                if(coords[1]>maxY){
-                maxY=coords[1];
-            }
-             if(coords[1]<minY){
-                minY=coords[1];
-            }
-            }
-            
-            //System.out.println(coords[0] + ", " + coords[1]);
-        }
+      
   
         
         double DistanceX=maxX-minX;
@@ -369,37 +394,15 @@ public class Mavenproject1 {
                  }
              }
          }
-          for(int i=0;i<10;i++){
-            System.out.println("--"+pixels[i].R+" "+pixels[i].G+" "+pixels[i].B);
-        }
         
-         for (int i=0;i<dataPoints.size();i++) {
-               DoublePoint item=dataPoints.get(i);
-               double[] T=item.getPoint();
-               if(T[0]!=-10000){
-                    T[0]=T[0]-minX;
-               T[0]=T[0]*255/DistanceX;
-               dataPoints.get(i).getPoint()[0]=T[0]-(T[0]%1);
-               
-               T[1]=T[1]-minY;
-               T[1]=T[1]*255/DistanceY;
-               dataPoints.get(i).getPoint()[1]=T[1]-(T[1]%1);
-               }
-              
-        }
-         
+        
+        
          
         SugmentsPositions[] Positions=getPosotion(sugmentsPoints, Imagewidth, ImageHeight, numClusters);
-        for(int h=0;h<Positions.length;h++){
-            if(Positions[h]!=null){
-                System.out.println(" "+Positions[h].lineId+" "+Positions[h].sugmentId+" "+Positions[h].columnStart+" "+Positions[h].columnEnd);
-
-            }
-        }
-        
+       
         
         JFrame frame = new JFrame("Draw Squares");
-        draw panel = new draw( dataPoints,Imagewidth,ImageHeight,Positions,numClusters,pixels);
+        draw panel = new draw( Imagewidth,ImageHeight,Positions,numClusters,pixels);
         frame.add(panel);
         frame.setSize(25 + 100, 25 + 30); 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

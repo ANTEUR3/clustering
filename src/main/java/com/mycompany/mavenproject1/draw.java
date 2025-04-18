@@ -36,8 +36,7 @@ public class draw extends JPanel {
             
    
     
-    public draw(List<DoublePoint> points,int w,int h,SugmentsPositions[] Positions,int s,pixel[] pixelsTable){
-        this.points=points;
+    public draw(int w,int h,SugmentsPositions[] Positions,int s,pixel[] pixelsTable){
         this.height=h;
         this.width=w;
         this.positions=Positions;
@@ -60,19 +59,16 @@ public class draw extends JPanel {
         //Draw the smaller squares based on percentages
        
         int[] sugmentsIndexes=new int[this.sugmentsNumber];
-        sugmentsIndexes[0]=0;
+       sugmentsIndexes[0]=0;
         int index=1;
-        for(int k=1;k<this.height*this.width;k++){
-            DoublePoint point=this.points.get(k);
-            double[] table=point.getPoint();
-            if(pixels[k].R==-10000){
+        for(int k=1;k<this.height*this.width+this.sugmentsNumber;k++){
+            if(pixels[k].R==-10000 && index!=this.sugmentsNumber){
                     sugmentsIndexes[index]=k+1;
                     index++;  
-            }
-                    
+            }           
         }
        
-        
+
         for(int i=0;i<this.positions.length;i++){
             if(positions[i]!=null){
                 int line=this.positions[i].lineId;
@@ -80,10 +76,8 @@ public class draw extends JPanel {
                 int columnEnd=this.positions[i].columnEnd;
                 int sugmentId=this.positions[i].sugmentId-1;
                 for(int j=0;j<columnEnd-columnStart+1;j++){
-                    DoublePoint P=this.points.get(sugmentsIndexes[sugmentId]);
                     pixel pixel=new pixel(this.pixels[sugmentsIndexes[sugmentId]].R,this.pixels[sugmentsIndexes[sugmentId]].G,this.pixels[sugmentsIndexes[sugmentId]].B);
-                    double[] T=P.getPoint();
-                    if(T[0]!=-10000){
+                    if(pixel.R!=-10000){
                          Color color=new Color((int)pixel.R,(int)pixel.G,(int)pixel.B);
                         g.setColor(color);
                    g.fillRect((columnStart+j)+100,(line),1,1);
@@ -98,10 +92,7 @@ public class draw extends JPanel {
                     
                       
         }
-         for(int h=0;h<sugmentsNumber;h++){
-            System.out.println("///"+sugmentsIndexes[h]);
-        }
-        
+      
         
         
 }
